@@ -25,4 +25,13 @@ class TeamDataRetriever:
         raw_data = pd.read_csv(path)
         team_data = raw_data[raw_data['team_id'] == self.team_id]
 
+        # put all of the shot info on the same side of the rink
+        team_data = team_data.apply(self._normalize_shot_coordinates, axis=1)
+
         return team_data
+    
+    def _normalize_shot_coordinates(self, row):
+        if row['x_coord'] < 0:
+            row['x_coord'] = -row['x_coord']
+            row['y_coord'] = - row['y_coord']
+        return row
