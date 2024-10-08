@@ -32,7 +32,7 @@ class DataCleaner:
         # 2 -> PP (powerplay)
         path = f'ift6758/data/{season}/{season_type}.json'
         df = pd.DataFrame(columns=['game_id', 'period', 'time_in', 'time_remaining', 'team_id', 'is_goal', 'x_coord', 'y_coord', 'shooter_name', 'goalie_name', 'shot_type', 'is_empty_net', 'situation_type'])
-        with open(path) as f:
+        with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             df_data = pd.read_json(path)
             games_iter = tqdm(data)
