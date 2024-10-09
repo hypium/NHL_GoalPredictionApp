@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import requests
+from tqdm import tqdm
 
 class ShotsDataRetriever:
     def __init__(self):
@@ -10,10 +11,9 @@ class ShotsDataRetriever:
         
     def get_all_shots(self):
         df = pd.DataFrame()
-        for team_id in self.TEAM_IDS:
+        for team_id in tqdm(self.TEAM_IDS, desc="Retrieving shots data"):
             team_df = self.get_all_shots_for_team(team_id)
             df = pd.concat([df, team_df], axis=0)
-            print(f"Obtaining data for team {team_id}...")
 
         return df
 
@@ -30,10 +30,12 @@ class ShotsDataRetriever:
         season_path = f"../data/{season}/season.csv"
         if not os.path.exists(season_path):
             print(f"file not found at {season_path}")
+            return None
 
         playoffs_path = f"../data/{season}/playoffs.csv"
         if not os.path.exists(playoffs_path):
             print(f"file not found at {playoffs_path}")
+            return None
 
         season_df = pd.read_csv(f"{season_path}")
         playoffs_df = pd.read_csv(f"{playoffs_path}")
