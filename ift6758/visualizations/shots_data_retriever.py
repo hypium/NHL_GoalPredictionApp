@@ -32,7 +32,6 @@ class ShotsDataRetriever:
         return df
     
     def get_season_shots(self, season) -> pd.DataFrame:
-        #? TODO
         season_path = f"../data/{season}/season.csv"
         if not os.path.exists(season_path):
             print(f"file not found at {season_path}")
