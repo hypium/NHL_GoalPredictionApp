@@ -9,7 +9,7 @@ class ShotsDataRetriever:
         self.TYPES = ["season", "playoffs"]
         self.TEAM_IDS = self._get_team_ids()
         
-    def get_all_shots(self):
+    def get_all_shots(self) -> pd.DataFrame:
         df = pd.DataFrame()
         for team_id in tqdm(self.TEAM_IDS, desc="Retrieving shots data"):
             team_df = self.get_all_shots_for_team(team_id)
