@@ -17,7 +17,7 @@ class ShotsDataRetriever:
 
         return df
 
-    def get_all_shots_for_team(self, team_id) -> pd.DataFrame:
+    def get_all_shots_for_team(self, team_id: int) -> pd.DataFrame:
         df = pd.DataFrame()
         for season in self.SEASONS:
             season_df = self.get_season_shots_for_team(season, team_id)
@@ -26,12 +26,12 @@ class ShotsDataRetriever:
         return df
             
     # return a df with all shot info for a given team in a given season
-    def get_season_shots_for_team(self, season, team_id) -> pd.DataFrame:
+    def get_season_shots_for_team(self, season: str, team_id: int) -> pd.DataFrame:
         df = self.get_season_shots(season)
         df = df[df['team_id'] == team_id]
         return df
     
-    def get_season_shots(self, season) -> pd.DataFrame:
+    def get_season_shots(self, season: str) -> pd.DataFrame:
         season_path = f"../data/{season}/season.csv"
         if not os.path.exists(season_path):
             print(f"file not found at {season_path}")
