@@ -27,6 +27,12 @@ class ShotsDataRetriever:
             
     # return a df with all shot info for a given team in a given season
     def get_season_shots_for_team(self, season, team_id) -> pd.DataFrame:
+        df = self.get_season_shots(season)
+        df = df[df['team_id'] == team_id]
+        return df
+    
+    def get_season_shots(self, season) -> pd.DataFrame:
+        #? TODO
         season_path = f"../data/{season}/season.csv"
         if not os.path.exists(season_path):
             print(f"file not found at {season_path}")
@@ -41,8 +47,6 @@ class ShotsDataRetriever:
         playoffs_df = pd.read_csv(f"{playoffs_path}")
 
         df = pd.concat([season_df, playoffs_df], axis=0)
-        df = df[df['team_id'] == team_id]
-        # put all of the shot info on the same side of the rink
         df = df.apply(self._normalize_shot_coordinates, axis=1)
         return df
     
