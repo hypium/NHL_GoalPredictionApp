@@ -7,15 +7,6 @@ class ShotsDataRetriever:
     def __init__(self):
         self.SEASONS = [year for year in range(2016, 2024)]
         self.TYPES = ["season", "playoffs"]
-        self.TEAM_IDS = self._get_team_ids()
-        
-    def get_all_shots(self) -> pd.DataFrame:
-        df = pd.DataFrame()
-        for team_id in tqdm(self.TEAM_IDS, desc="Retrieving shots data"):
-            team_df = self.get_all_shots_for_team(team_id)
-            df = pd.concat([df, team_df], axis=0)
-
-        return df
 
     def get_all_shots_for_team(self, team_id: int) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -55,17 +46,6 @@ class ShotsDataRetriever:
             row['y_coord'] = - row['y_coord']
 
         return row
-    
-    def _get_team_ids(self):
-        response = requests.get('https://api.nhle.com/stats/rest/en/team')
-        data = {}
-        if response.status_code == 200:
-            data = response.json()
-            franchise_ids = [team['franchiseId'] for team in data['data'] if team['franchiseId'] is not None]
-            return list(set(franchise_ids))
-        
-        print("ShotsDataRetriever - _get_team_ids - unable to find teams")
-        return None
 
 if __name__ == "__main__":
     obj = ShotsDataRetriever()
