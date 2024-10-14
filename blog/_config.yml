@@ -1,0 +1,21 @@
+# Setup
+title:               'Projet de session &middot; IFT6758'
+tagline:             Blog
+description:         ''
+url:                 ''
+baseurl:             ''
+paginate:            5
+permalink:           pretty
+
+# About/contact
+author:
+  name:              Mohamed Amin Soumih, Daniel Lofeodo, Nathan Cormerais
+  email:             mohamed.amin.soumih@umontreal.ca, daniel.lofeodo@umontreal.ca, nathan.cormerais@umontreal.ca
+
+# Gems
+plugins:
+  - jekyll-paginate
+
+# Custom vars
+version:             1.1.0
+google_analytics_id: #UA-XXXX-Y
