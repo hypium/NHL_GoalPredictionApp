@@ -4,7 +4,8 @@ title: Home
 ---
 
 <div class="posts">
-  {% for post in paginator.posts %}
+  {% assign sorted_posts = paginator.posts | sort: 'question' %}
+  {% for post in sorted_posts %}
   <div class="post">
     <h1 class="post-title">
       <a href="{{ post.url | absolute_url }}">
@@ -12,9 +13,10 @@ title: Home
       </a>
     </h1>
 
-    <span class="post-date">{{ post.date | date_to_string }}</span>
+    <span class="post-info">{{ post.date | date_to_string }}<span class="post-question">Milestone #<b>{{ post.milestone }}</b></span></span>
+    <span class="post-more-info">{{ post.auteurs }}<span class="post-question">Partie #<b>{{ post.question }}</b></span></span>
 
-    {{ post.content }}
+    <div class="post-content">{{ post.content }}</div>
   </div>
   {% endfor %}
 </div>
