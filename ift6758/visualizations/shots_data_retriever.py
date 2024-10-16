@@ -43,7 +43,6 @@ class ShotsDataRetriever:
     def _normalize_shot_coordinates(self, row):
         if row['x_coord'] < 0:
             row['x_coord'] = -row['x_coord']
-            row['y_coord'] = - row['y_coord']
 
         return row
 
