@@ -80,7 +80,7 @@ class DataCleaner:
                             'y_coord': play['details']['yCoord'],
                             'shooter_name': self.get_payer_name(df_data, game['id'], event_owner_id),
                             'goalie_name': goalie_name,
-                            'shot_type': int(play['details']['shotType'] == 'slap'),
+                            'shot_type': play['details']['shotType'],
                             'is_empty_net': int(is_empty_net),
                             'situation_type': situation,
                         }
