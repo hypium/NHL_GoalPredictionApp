@@ -1,6 +1,6 @@
+import numpy as np
 import os
 import pandas as pd
-import requests
 from tqdm import tqdm
 
 class ShotsDataRetriever:
@@ -15,7 +15,31 @@ class ShotsDataRetriever:
             df = pd.concat([df, year_df], axis=0)
 
         return df
-            
+    
+    # return a df of shots for a given year and season type
+    def get_year_shots_for_season_type(self, year: str, season_type: str):
+        if season_type not in self.TYPES:
+            print(f"Invalid season type: {season_type}")
+            return None
+        
+        shots_path = f"../data/{year}/{season_type}.csv"
+        if not os.path.exists(shots_path):
+            print(f"file not found at {shots_path}")
+            return None
+        
+        df = pd.read_csv(f"{shots_path}")
+        df = df.apply(self._normalize_shot_coordinates, axis=1)
+
+        return df
+    
+    def get_season_type_shots_in_years(self, years: list[str], season: str):
+        df = pd.DataFrame()
+        for year in years:
+            year_df = self.get_year_shots_for_season_type(year, season)
+            df = pd.concat([df, year_df], axis=0)
+
+        return df
+                
     # return a df with all shot info for a given team in a given year
     def get_year_shots_for_team(self, year: str, team_id: int) -> pd.DataFrame:
         df = self.get_year_shots(year)
@@ -23,21 +47,24 @@ class ShotsDataRetriever:
         return df
     
     def get_year_shots(self, year: str) -> pd.DataFrame:
-        season_path = f"../data/{year}/season.csv"
-        if not os.path.exists(season_path):
-            print(f"file not found at {season_path}")
-            return None
-
-        playoffs_path = f"../data/{year}/playoffs.csv"
-        if not os.path.exists(playoffs_path):
-            print(f"file not found at {playoffs_path}")
-            return None
-
-        season_df = pd.read_csv(f"{season_path}")
-        playoffs_df = pd.read_csv(f"{playoffs_path}")
+        season_df = self.get_year_shots_for_season_type(year, "season")
+        playoffs_df = self.get_year_shots_for_season_type(year, "playoffs")
 
         df = pd.concat([season_df, playoffs_df], axis=0)
-        df = df.apply(self._normalize_shot_coordinates, axis=1)
+        return df
+    
+    def get_df_for_milestone2_part2(self):
+        years = [str(year) for year in range(2016,2020)]
+
+        df = self.get_season_type_shots_in_years(years, "season")
+
+        df['distance'] = np.sqrt((df['x_coord'] - 90)**2 + df['y_coord']**2)
+        df['angle_to_goal'] = np.degrees(np.arctan2(df['y_coord'], 90 - df['x_coord']))
+
+        df.drop(['game_id', 'period', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'time_in', 'situation_type', 'x_coord', 'y_coord', 'shot_type'], 
+                axis=1,
+                inplace = True)
+
         return df
     
     def _normalize_shot_coordinates(self, row):
