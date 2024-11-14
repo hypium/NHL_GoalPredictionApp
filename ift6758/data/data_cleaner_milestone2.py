@@ -35,7 +35,7 @@ class DataCleanerMilestone2:
                     shotcount += 1
                     # Current shot info
                     try:
-                        x_coord = shot['details']['xCoord']
+                        x_coord = np.abs(shot['details']['xCoord'])
                         y_coord = shot['details']['yCoord']
                         shot_type = shot['details']['shotType']
                         event_owner_team = shot['details']['eventOwnerTeamId']
@@ -60,7 +60,10 @@ class DataCleanerMilestone2:
                     play_index = game['plays'].index(shot)
                     last_event_info = self._get_last_event_info(game, play_index, period, game_seconds, x_coord, y_coord)
 
+                    # include gameid and play# to be able to find it on the interactive debug tool
                     row = {
+                        'game_id': game['id'],
+                        'play_num': play_index,
                         'period': period, 
                         'is_goal': is_goal, 
                         'x_coord': x_coord, 
@@ -74,7 +77,7 @@ class DataCleanerMilestone2:
                     }
                     rows.append(row)
 
-            print(f"Total shots in season: {shotcount}, skipped shots: {skippedshots}, % shots skipped: {skippedshots/shotcount * 100}")
+            print(f"Total shots in season: {shotcount}, skipped shots: {skippedshots}, Percent shots skipped: {skippedshots/shotcount * 100}%")
             
             out_dir = f"ift6758/data/milestone2/{season}"
             if not os.path.exists(out_dir):
@@ -117,6 +120,7 @@ class DataCleanerMilestone2:
         last_event_x = last_event_details.get('xCoord')
         last_event_y = last_event_details.get('yCoord')
         if last_event_x is not None and last_event_y is not None:
+            last_event_x = np.abs(last_event_x)
             distance_from_last_event = np.hypot(x_coord - last_event_x, y_coord - last_event_y)
         else:
             distance_from_last_event = None
