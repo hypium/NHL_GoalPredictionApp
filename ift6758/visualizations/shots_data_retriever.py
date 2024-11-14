@@ -67,11 +67,42 @@ class ShotsDataRetriever:
 
         return df
     
+    def get_df_for_milestone2_part4(self):
+        years = [str(year) for year in range(2016,2020)]
+
+        df = self.get_season_type_shots_in_years(years, "season")
+
+        df['distance'] = np.sqrt((df['x_coord'] - 90)**2 + df['y_coord']**2)
+        df['angle_to_goal'] = np.degrees(np.arctan2(df['y_coord'], 90 - df['x_coord']))
+        df['time_in_seconds'] = df['time_in'].apply(self._convert_to_seconds)
+        # Period 1 = starts at 0 * 20 minutes * 60s/minute
+        # Period 2 = starts at 1 * 20 minutes * 60s/minute
+        # etc.
+        df['game_seconds'] = (df['period'].astype(int) - 1) * 20 * 60 + df['time_in_seconds']
+
+        df.drop(['game_id', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'situation_type'], 
+                axis=1,
+                inplace = True)
+
+        return df
+    
     def _normalize_shot_coordinates(self, row):
         if row['x_coord'] < 0:
             row['x_coord'] = -row['x_coord']
 
         return row
+    
+    def _convert_to_seconds(self, time: str):
+        time_arr = time.split(':')
+
+        if len(time_arr)==2:
+            seconds = int(time_arr[0]) * 60 + int(time_arr[1])
+        elif len(time_arr)==1:
+            seconds = int(time_arr[0])
+        else:
+            print("Error, too many indices in time_arr")
+
+        return seconds
 
 if __name__ == "__main__":
     obj = ShotsDataRetriever()
