@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import json
+import os
 from tqdm import tqdm
 
 class DataCleanerMilestone2:
@@ -28,8 +29,9 @@ class DataCleanerMilestone2:
         
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            df_data = pd.read_json(path)
             games_iter = tqdm(data)
+            shotcount = 0
+            skippedshots = 0
             for game in games_iter:
                 games_iter.set_description_str("Game: %s" % game['id'])
 
@@ -38,6 +40,7 @@ class DataCleanerMilestone2:
                 away_team_id = game['awayTeam']['id']
 
                 for shot in shots:
+                    shotcount += 1
                     # Current shot info
                     try:
                         x_coord = shot['details']['xCoord']
@@ -46,8 +49,8 @@ class DataCleanerMilestone2:
                         event_owner_team = shot['details']['eventOwnerTeamId']
                     except:
                         # The data does not contain the required details, we can skip over this shot
-                        # to keep the data clean
-                        print("Important shot details not found. Shot skipped.")
+                        # since this is an error and very rare. This should not introduce significant bias.
+                        skippedshots += 1
                         continue
 
                     situation = str(shot['situationCode'])
@@ -77,18 +80,16 @@ class DataCleanerMilestone2:
                             try:
                                 last_event_x_coord = previous_play['details']['xCoord']
                                 last_event_y_coord = previous_play['details']['yCoord']
+                                distance_from_last_event = np.sqrt((x_coord - last_event_x_coord) ** 2 + (y_coord - last_event_y_coord) ** 2)
                             except KeyError as e:
-                                # The data does not contain the required info.
-                                # Continue to keep the data clean.
-                                print("Last event coordinates not found. Shot skipped.")
-                                continue
+                                last_event_x_coord = None
+                                last_event_y_coord = None
+                                distance_from_last_event = None
 
-                            # Find a way to convert typeCode using the NHL API endpoint
                             last_event_type = previous_play['typeCode']
                             time_in_period_seconds = self._convert_to_seconds(previous_play['timeInPeriod'])
                             last_event_seconds = (int(period) - 1) * 20 * 60 + time_in_period_seconds
                             time_since_last_event = game_seconds - last_event_seconds
-                            distance_from_last_event = np.sqrt((x_coord - last_event_x_coord) ** 2 + (y_coord - last_event_y_coord) ** 2)
                         else:
                             last_event_type = None
                             last_event_x_coord = None
@@ -112,9 +113,9 @@ class DataCleanerMilestone2:
                         'time_since_last_event': time_since_last_event,
                         'distance_from_last_event': distance_from_last_event
                     }
-
                     df = df._append(row, ignore_index=True)
 
+            print(f"Total shots in season: {shotcount}, skipped shots: {skippedshots}, % shots skipped: {skippedshots/shotcount * 100}")
             out_path = f'ift6758/data/milestone2/{season}/{season_type}.csv'
             df.to_csv(out_path, index=False)
 
@@ -140,5 +141,8 @@ class DataCleanerMilestone2:
         return seconds
 
 if __name__ == '__main__':
+    if not os.path.exists("ift6758/data/milestone2"):
+        os.makedirs("ift6758/data/milestone2")
+
     data_cleaner_obj = DataCleanerMilestone2()
     data_cleaner_obj.clean_data()
