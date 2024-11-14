@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 import os
+import warnings
 from tqdm import tqdm
 
 class DataCleanerMilestone2:
@@ -141,6 +142,9 @@ class DataCleanerMilestone2:
         return seconds
 
 if __name__ == '__main__':
+    # Some values are None. This warning filter is required to remove spam in the output regarding null values
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+
     if not os.path.exists("ift6758/data/milestone2"):
         os.makedirs("ift6758/data/milestone2")
 
