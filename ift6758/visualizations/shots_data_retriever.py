@@ -80,7 +80,7 @@ class ShotsDataRetriever:
         # etc.
         df['game_seconds'] = (df['period'].astype(int) - 1) * 20 * 60 + df['time_in_seconds']
 
-        df.drop(['game_id', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'situation_type'], 
+        df.drop(['game_id', 'team_id', 'time_in_seconds', 'time_in', 'shooter_name', 'goalie_name', 'time_remaining', 'situation_type'], 
                 axis=1,
                 inplace = True)
 
