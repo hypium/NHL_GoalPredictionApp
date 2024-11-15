@@ -60,6 +60,20 @@ class DataCleanerMilestone2:
                     play_index = game['plays'].index(shot)
                     last_event_info = self._get_last_event_info(game, play_index, period, game_seconds, x_coord, y_coord)
 
+                    rebound = last_event_info['last_event_type'] in {505, 506}
+                    angle_change = 0
+                    last_x = last_event_info['last_event_x_coord']
+                    last_y = last_event_info['last_event_y_coord']
+                    if rebound and last_x is not None and last_y is not None:
+                        last_angle = np.degrees(np.arctan2(last_y, 90 - last_x))
+                        angle_change = last_angle - angle_to_goal
+
+                    speed = None
+                    dist_from_last = last_event_info['distance_from_last_event']
+                    time_since_last = last_event_info['time_since_last_event']
+                    if dist_from_last is not None and time_since_last is not None and time_since_last != 0:
+                        speed = dist_from_last/time_since_last
+
                     # include gameid and play# to be able to find it on the interactive debug tool
                     row = {
                         'game_id': game['id'],
@@ -73,11 +87,14 @@ class DataCleanerMilestone2:
                         'distance': distance,
                         'angle_to_goal': angle_to_goal, 
                         'game_seconds': game_seconds, 
-                        **last_event_info
+                        **last_event_info,
+                        'rebound': rebound,
+                        'angle_change': angle_change,
+                        'speed': speed
                     }
                     rows.append(row)
 
-            print(f"Total shots in season: {shotcount}, skipped shots: {skippedshots}, Percent shots skipped: {skippedshots/shotcount * 100}%")
+            print(f"Total shots in season: {shotcount}, skipped shots: {skippedshots}, Percent shots skipped: {skippedshots/shotcount * 100: .2f}%")
             
             out_dir = f"ift6758/data/milestone2/{season}"
             if not os.path.exists(out_dir):
