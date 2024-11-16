@@ -17,12 +17,17 @@ class ShotsDataRetriever:
         return df
     
     # return a df of shots for a given year and season type
-    def get_year_shots_for_season_type(self, year: str, season_type: str):
+    def get_year_shots_for_season_type(self, year: str, season_type: str, milestone: int = 1):
+        if milestone == 2:
+            dir = f"../data/milestone2/{year}"
+        else:
+            dir = f"../data/{year}"
+
         if season_type not in self.TYPES:
             print(f"Invalid season type: {season_type}")
             return None
         
-        shots_path = f"../data/{year}/{season_type}.csv"
+        shots_path = f"{dir}/{season_type}.csv"
         if not os.path.exists(shots_path):
             print(f"file not found at {shots_path}")
             return None
@@ -32,10 +37,10 @@ class ShotsDataRetriever:
 
         return df
     
-    def get_season_type_shots_in_years(self, years: list[str], season: str):
+    def get_season_type_shots_in_years(self, years: list[str], season: str, milestone: int = 1):
         df = pd.DataFrame()
         for year in years:
-            year_df = self.get_year_shots_for_season_type(year, season)
+            year_df = self.get_year_shots_for_season_type(year, season, milestone)
             df = pd.concat([df, year_df], axis=0)
 
         return df
@@ -68,11 +73,29 @@ class ShotsDataRetriever:
 
         return df
     
+    def get_df_for_milestone2_part4(self):
+        years = [str(year) for year in range(2016,2020)]
+        df = self.get_season_type_shots_in_years(years, "season", 2)
+
+        return df
+    
     def _normalize_shot_coordinates(self, row):
         if row['x_coord'] < 0:
             row['x_coord'] = -row['x_coord']
 
         return row
+    
+    def _convert_to_seconds(self, time: str):
+        time_arr = time.split(':')
+
+        if len(time_arr)==2:
+            seconds = int(time_arr[0]) * 60 + int(time_arr[1])
+        elif len(time_arr)==1:
+            seconds = int(time_arr[0])
+        else:
+            print("Error, too many indices in time_arr")
+
+        return seconds
 
 if __name__ == "__main__":
     obj = ShotsDataRetriever()
