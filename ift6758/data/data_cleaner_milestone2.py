@@ -27,37 +27,42 @@ class DataCleanerMilestone2:
             for game in games_iter:
                 games_iter.set_description_str("Game: %s" % game['id'])
 
-                # Filter shots and goals
-                shots = [play for play in game['plays'] if play['typeCode'] in [505, 506]]
                 away_team_id = game['awayTeam']['id']
+                active_powerplay = None
 
-                for shot in shots:
+                for play in game['plays']:
+                    if play.get("typeDescKey") == "penalty":
+                        active_powerplay = self._get_active_powerplay(play)
+                        continue
+                    elif play["typeCode"] not in {505, 506}:
+                        continue
+                    
                     shotcount += 1
                     # Current shot info
                     try:
-                        x_coord = np.abs(shot['details']['xCoord'])
-                        y_coord = shot['details']['yCoord']
-                        shot_type = shot['details']['shotType']
-                        event_owner_team = shot['details']['eventOwnerTeamId']
+                        x_coord = np.abs(play['details']['xCoord'])
+                        y_coord = play['details']['yCoord']
+                        shot_type = play['details']['shotType']
+                        event_owner_team = play['details']['eventOwnerTeamId']
                     except:
                         # The data does not contain the required details, we can skip over this shot
                         # since this is an error and very rare. This should not introduce significant bias.
                         skippedshots += 1
                         continue
 
-                    situation = str(shot['situationCode'])
+                    situation = str(play['situationCode'])
                     is_away_team = away_team_id == event_owner_team
                     distance = np.hypot(x_coord - 90, y_coord)
                     angle_to_goal = np.degrees(np.arctan2(y_coord, 90 - x_coord))
                     is_away_goalie_in_net = int(situation[0])
                     is_home_goalie_in_net = int(situation[3])
-                    is_empty_net = (is_away_team and not bool(is_home_goalie_in_net)) or (not is_away_team and not bool(is_away_goalie_in_net) or 'goalieInNetId' not in shot['details'])
-                    period = shot['periodDescriptor']['number']
-                    is_goal = int(shot['typeCode'] == 505)
-                    time_in_period_seconds = self._convert_to_seconds(shot['timeInPeriod'])
+                    is_empty_net = (is_away_team and not bool(is_home_goalie_in_net)) or (not is_away_team and not bool(is_away_goalie_in_net) or 'goalieInNetId' not in play['details'])
+                    period = play['periodDescriptor']['number']
+                    is_goal = int(play['typeCode'] == 505)
+                    time_in_period_seconds = self._convert_to_seconds(play['timeInPeriod'])
                     game_seconds = (int(period) - 1) * 20 * 60 + time_in_period_seconds
 
-                    play_index = game['plays'].index(shot)
+                    play_index = game['plays'].index(play)
                     last_event_info = self._get_last_event_info(game, play_index, period, game_seconds, x_coord, y_coord)
 
                     rebound = last_event_info['last_event_type'] in {505, 506}
@@ -73,6 +78,13 @@ class DataCleanerMilestone2:
                     time_since_last = last_event_info['time_since_last_event']
                     if dist_from_last is not None and time_since_last is not None and time_since_last != 0:
                         speed = dist_from_last/time_since_last
+
+                    away_skaters = int(situation[1])
+                    home_skaters = int(situation[2])
+
+                    time_since_powerplay = 0
+                    if active_powerplay is not None and game_seconds < active_powerplay['end_time']:
+                        time_since_powerplay = game_seconds - active_powerplay['start_time']
 
                     # include gameid and play# to be able to find it on the interactive debug tool
                     row = {
@@ -90,7 +102,10 @@ class DataCleanerMilestone2:
                         **last_event_info,
                         'rebound': rebound,
                         'angle_change': angle_change,
-                        'speed': speed
+                        'speed': speed,
+                        'time_since_powerplay': time_since_powerplay,
+                        'away_skaters': away_skaters,
+                        'home_skaters': home_skaters
                     }
                     rows.append(row)
 
@@ -162,6 +177,22 @@ class DataCleanerMilestone2:
             print("Error, too many indices in time_arr")
 
         return seconds
+    
+    def _get_active_powerplay(self, play):
+        penalty_details = play.get("details", {})
+        if not penalty_details:
+            return None 
+
+        period = play['periodDescriptor']['number']
+        time_in_period_seconds = self._convert_to_seconds(play['timeInPeriod'])
+        game_seconds = (int(period) - 1) * 20 * 60 + time_in_period_seconds
+        penalty_duration = penalty_details.get("duration", 0) * 60
+        active_powerplay = {
+            "start_time": game_seconds,
+            "end_time": game_seconds + penalty_duration
+        }
+
+        return active_powerplay
 
 if __name__ == '__main__':
     data_cleaner_obj = DataCleanerMilestone2()
