@@ -60,10 +60,11 @@ class ShotsDataRetriever:
 
         df['distance'] = np.sqrt((df['x_coord'] - 90)**2 + df['y_coord']**2)
         df['angle_to_goal'] = np.degrees(np.arctan2(df['y_coord'], 90 - df['x_coord']))
-
-        df.drop(['game_id', 'period', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'time_in', 'situation_type', 'x_coord', 'y_coord', 'shot_type'], 
-                axis=1,
-                inplace = True)
+        
+        #? OLD
+        # df.drop(['game_id', 'period', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'time_in', 'situation_type', 'x_coord', 'y_coord', 'shot_type'], 
+        #         axis=1,
+        #         inplace = True)
 
         return df
     
