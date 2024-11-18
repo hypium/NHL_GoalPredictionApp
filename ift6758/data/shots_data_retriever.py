@@ -65,11 +65,6 @@ class ShotsDataRetriever:
 
         df['distance'] = np.sqrt((df['x_coord'] - 90)**2 + df['y_coord']**2)
         df['angle_to_goal'] = np.degrees(np.arctan2(df['y_coord'], 90 - df['x_coord']))
-        
-        #? OLD
-        # df.drop(['game_id', 'period', 'team_id', 'shooter_name', 'goalie_name', 'time_remaining', 'time_in', 'situation_type', 'x_coord', 'y_coord', 'shot_type'], 
-        #         axis=1,
-        #         inplace = True)
 
         return df
     
@@ -79,6 +74,9 @@ class ShotsDataRetriever:
 
         return df
     
+    def get_df_for_milestone2_test_set(self):
+        return self.get_year_shots_for_season_type("2020", "season", 2)
+        
     def _normalize_shot_coordinates(self, row):
         if row['x_coord'] < 0:
             row['x_coord'] = -row['x_coord']
