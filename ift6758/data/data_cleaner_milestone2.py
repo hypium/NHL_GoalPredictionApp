@@ -64,6 +64,9 @@ class DataCleanerMilestone2:
 
                     play_index = game['plays'].index(play)
                     last_event_info = self._get_last_event_info(game, play_index, period, game_seconds, x_coord, y_coord)
+                    if last_event_info is None:
+                        skippedshots += 1
+                        continue
 
                     rebound = last_event_info['last_event_type'] in {505, 506}
                     angle_change = 0
@@ -73,7 +76,7 @@ class DataCleanerMilestone2:
                         last_angle = np.degrees(np.arctan2(last_y, 90 - last_x))
                         angle_change = last_angle - angle_to_goal
 
-                    speed = None
+                    speed = 0
                     dist_from_last = last_event_info['distance_from_last_event']
                     time_since_last = last_event_info['time_since_last_event']
                     if dist_from_last is not None and time_since_last is not None and time_since_last != 0:
@@ -130,32 +133,20 @@ class DataCleanerMilestone2:
 
     def _get_last_event_info(self, game, play_index, period, game_seconds, x_coord, y_coord):
         if play_index == 0:
-            return {
-                'last_event_type': None, 
-                'last_event_x_coord': None, 
-                'last_event_y_coord': None,
-                'time_since_last_event': None, 
-                'distance_from_last_event': None
-                }
+            return None
 
         previous_play = game['plays'][play_index - 1]
         if period != previous_play['periodDescriptor']['number']:
-            return {
-                'last_event_type': None, 
-                'last_event_x_coord': None, 
-                'last_event_y_coord': None,
-                'time_since_last_event': None, 
-                'distance_from_last_event': None
-                }
+            return None
 
         last_event_details = previous_play.get('details', {})
         last_event_x = last_event_details.get('xCoord')
         last_event_y = last_event_details.get('yCoord')
-        if last_event_x is not None and last_event_y is not None:
-            last_event_x = np.abs(last_event_x)
-            distance_from_last_event = np.hypot(x_coord - last_event_x, y_coord - last_event_y)
-        else:
-            distance_from_last_event = None
+        if last_event_x is None or last_event_y is None:
+            return None
+        
+        last_event_x = np.abs(last_event_x)
+        distance_from_last_event = np.hypot(x_coord - last_event_x, y_coord - last_event_y)
         last_event_seconds = (int(period) - 1) * 20 * 60 + self._convert_to_seconds(previous_play['timeInPeriod'])
         
         return {
