@@ -17,3 +17,8 @@ dependencies:
   - ipywidgets
   - jupyterlab>=3.0.0
   - ipdb
+  - scikit-learn
+  - xgboost
+  - optuna
+  - wandb
+  - shap
