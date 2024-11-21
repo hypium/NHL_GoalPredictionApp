@@ -74,9 +74,12 @@ class ShotsDataRetriever:
 
         return df
     
-    def get_df_for_milestone2_test_set(self):
+    def get_season_df_for_milestone2_test_set(self):
         return self.get_year_shots_for_season_type("2020", "season", 2)
         
+    def get_playoffs_df_for_milestone2_test_set(self):
+        return self.get_year_shots_for_season_type("2020", "playoffs", 2)
+    
     def _normalize_shot_coordinates(self, row):
         if row['x_coord'] < 0:
             row['x_coord'] = -row['x_coord']
