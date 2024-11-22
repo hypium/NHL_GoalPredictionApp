@@ -4,13 +4,13 @@ tagline:             Blog
 description:         ''
 url:                 ''
 baseurl:             ''
-paginate:            5
+paginate:            3
 permalink:           pretty
 
 # About/contact
 author:
-  name:              Mohamed Amin Soumih, Daniel Lofeodo, Nathan Cormerais
-  email:             mohamed.amin.soumih@umontreal.ca, daniel.lofeodo@umontreal.ca, nathan.cormerais@umontreal.ca
+  name:              Daniel Lofeodo, Nathan Cormerais
+  email:             daniel.lofeodo@umontreal.ca, nathan.cormerais@umontreal.ca
 
 # Gems
 plugins:
