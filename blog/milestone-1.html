@@ -1,10 +1,10 @@
 ---
-layout: default
-title: Home
+layout: page
+title: Milestone 1
 ---
 
 <div style="margin-bottom: 2rem">
-  Toutes les réponses sont présentes ci-dessous. Pour consulter les réponses pour un milestone en particulier, veuillez utiliser le menu de navigation, ou alors, pour consulter les réponses pour un milestone en particulier:
+  Cette page inclus les réponses pour le <b>milestone #1</b>, mais d'autres milestones sont disponibles:
   <ul style="padding-top: 1rem"">
     <li><a href="/milestone-1">Milestone 1</a></li>
     <li><a href="/milestone-2">Milestone 2</a></li>
@@ -12,20 +12,30 @@ title: Home
 </div>
 <hr>
 <div class="posts">
-  {% assign sorted_posts = paginator.posts | sort: 'question' | sort: 'milestone' | reverse %}
+  {% assign sorted_posts = site.posts | sort: 'question' | reverse %}
   {% for post in sorted_posts %}
-  <div class="post">
-    <h1 class="post-title">
-      <a href="{{ post.url | absolute_url }}">
-        {{ post.title }}
-      </a>
-    </h1>
+    {% if post.milestone == 1 %}
+      <div class="post">
+        <h1 class="post-title">
+          <a href="{{ post.url | absolute_url }}">
+            {{ post.title }}
+          </a>
+        </h1>
 
-    <span class="post-info">{{ post.date | date_to_string }}<span class="post-question">Milestone #<b>{{ post.milestone }}</b></span></span>
-    <span class="post-more-info">{{ post.auteurs }}<span class="post-question">Partie #<b>{{ post.question }}</b></span></span>
+        <span class="post-info">
+          {{ post.date | date_to_string }}
+          <span class="post-question">Milestone #<b>{{ post.milestone }}</b></span>
+        </span>
+        <span class="post-more-info">
+          {{ post.auteurs }}
+          <span class="post-question">Partie #<b>{{ post.question }}</b></span>
+        </span>
 
-    <div class="post-content">{{ post.content }}</div>
-  </div>
+        <div class="post-content">
+          {{ post.content }}
+        </div>
+      </div>
+    {% endif %}
   {% endfor %}
 </div>
 
