@@ -61,13 +61,13 @@ Toutes les caractéristiques numériques ont été mises à l'échelle à l'aide
 
 L'algorithme Select K Best a été utilisé pour filtrer les caractéristiques afin de réduire la complexité du modèle, d'empêcher le sur-apprentissage sur l'ensemble d'entraîenement et d'améliorer la généralisabilité du modèle.
 
-![img](public\models\xgboost\correlation_matrix.png)
+![img](../public\models\xgboost\correlation_matrix.png)
 
 En regardant la matrice de correlation, nous voyons que les caractéristiques `shot_type_snap`, `shot_type_tip-in`, `shot_type_wrap-around` et `shot_type_wrist` ont une corrélation proche de zéro avec  `is_goal`. Ce n'est donc pas surprennant que l'algorithme aie filtré ces caractéristiques.
 
 #### Importance des caractéristiques
 
-![img](public/models/xgboost/importance_carac.png)
+![img](../public/models/xgboost/importance_carac.png)
 
 Dans graphique ci-dessus, nous voyons que `is_empty_net` est de loin la variable la plus influente. C'est tout-à-fait logique - marquer un but est beaucoup plus facile s'il n'y a pas de guardient! Les deux autres caractéristiques importantes sont `distance`, qui mesure la proximité du tir par rapport au but, et `last_event_y`, ce qui est un peu cryptique et qui démontre un des avantages de l'IA - il permet de remarquer des correlations qui nous ne sont pas toujours évidents ou facilement interpretable.
 
@@ -83,7 +83,7 @@ Les résultats du modèle avec pré-traitement montrent une légère améliorati
 
 ### Courbes ROC
 
-![img](public/models/xgboost/roc.png)
+![img](../public/models/xgboost/roc.png)
 
 Ce graphique permet de comparer la proportion de classifications de buts juste (True Positive Rate) comparé à la proportion de classification de buts mais qui ne sont pas observées (False Positive Rate). En baissant le seuil de décision, le true positive rate augmente parce plus de tirs sont considérés, mais le false positive rate peux également augmenté parce que plus de tirs sont faussement considérés comme buts.
 
@@ -91,13 +91,13 @@ Un graphique idéal passe par un true positive rate de 100% et un false positive
 
 ### Pourcentage de buts cumulés
 
-![img](public\models\xgboost\buts_cumul.png)
+![img](../public\models\xgboost\buts_cumul.png)
 
 Nous voyons dans ce graphique que pour les modèles optimisés, la pente initial est plus aïgue. En particulier, au-delà du 90e percentile, nous voyons une pente plus prononcée qui s'applatit tranquillement en descendant les centiles. Cela indique que les modèles avancés ont un taux de prédiction de but supérieur. Cependant, il n'est pas possible de distinguer à l'oeil une différence entre les modèles optimisés avec et sans pré-traitement de données
 
 ### Taux de buts
 
-![img](public/models/xgboost/taux_de_buts.png)
+![img](../public/models/xgboost/taux_de_buts.png)
 
 Le graphique de taux de but nous aide à interpreter la fiabilité de prédiction d'un modèle. Avec un modèle ayant une bonne performance, nous nous attendons à ce qu'aux alentours des percentiles élevés de probabilité de but qu'une majorité des buts soient prédits. En descendant les percentiles de probabilité prédite de buts, nous nous attendons à retrouver moins de buts. Avec un modèle nul, nous nous attendrons à avoir une ligne plate indiquant que la prédiction du modèle ait aucun lien à la proportion de buts.
 
@@ -105,7 +105,7 @@ Dans le graphique, nous voyons que les modèles optimisés, encore une fois, son
 
 ### Diagramme de fiabilité
 
-![img](public/models/xgboost/diag_fiab.png)
+![img](../public/models/xgboost/diag_fiab.png)
 
 Le diagramme de fiabilité permet de comparer la probabilité moyenne prédite par le modèle à la fraction de buts. Dans un classifieur idéal, on s'attendrait que pour tous les buts ayant été prédits avec 20% de chance ou moins d'avoir une fraction de buts de 20% dans ce sous-ensemble. Dans le fond, on s'attendrait à une droite parfaite - comme l'est illustré dans le graphique.
 

@@ -8,7 +8,7 @@ auteurs: Nathan Cormerais
 
 ![image](/public/shots_goals_visualizations/histogramme_tirs_distance.png)
 
-En observant cet histogramme, on remarque qu'il y a une concentration de tirs proches, voir très proches du filet de but. En effet, il semblerait que les tirs sont majoritairement tirés entre 1 et 20 mètres du filet. De plus, les tirs sont généralement transformés en but lorsque le tir est relativement proche, soit à moins de 15m. Cependant, on constate qu'il n'y a aucun but à plus de 70m du filet. 
+En observant cet histogramme, on remarque qu'il y a une concentration de tirs proches, voir très proches du filet de but. En effet, il semblerait que les tirs sont majoritairement tirés entre 1 et 20 mètres du filet. De plus, les tirs sont généralement transformés en but lorsque le tir est relativement proche, soit à moins de 15m. Cependant, on constate qu'il n'y a aucun but à plus de 70m du filet.
 
 ![image](/public/shots_goals_visualizations/histogramme_tirs_angle.png)
 
@@ -29,3 +29,5 @@ Grâce à cette figure, on remarque que les taux de but est assez conséquent lo
 ![image](/public/shots_goals_visualizations/histogramme_buts_distance.png)
 
 Cet histogramme montre qu'il y a beaucoup moins de tirs effectués face à un filet vide que de tirs effectués face à un filet non vide. On remarque aussi que les buts ont majoritairement eu lieu lorsque le tir s'est trouvé à une distance comprise entrre 10 et 20 métres du filet. Cela confirme d'autant plus les conjectures émises plus tôt, c'est-à-dire que les buts probiennent majoritairement de tirs effectués proche du filet. 
+
+En observant le *dataframe* contenant tous les événements de chaque match, nous avons pris un échantillon au hasard parmis les événements de tir qui sont catégorisé comme "but dans un filet vide" et avons analysé les buts via des vidéos *highlights* des matchs concernés sur YouTube. Dans l'échantillon anaylsé, chaque tir décrit dans les données comme étant face à un filet vide était correctement classifié. Nous avons donc trouvé aucune donnée anormale, et une recherche plus approfondie est nécessaire afin de distinguer les données anormales des données saines.
