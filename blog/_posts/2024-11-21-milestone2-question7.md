@@ -23,7 +23,7 @@ Les graphiques que nous analyseront seront les graphiques ROC, de pourcentage de
 
 ### ROC
 
-![img](public/models/test_set/season/roc.png)
+![img](../public/models/test_set/season/roc.png)
 
 En observant le graphique ci-dessus nous voyons que les courbes se distingue générallement bien les unes des autres, mis à part les deux courbes Base - distance et Base - distance + angle, ansi que les deux courbes de XGBoost qui sont essentiellement identiques.
 
@@ -43,7 +43,7 @@ D'après cette courbe, nous voyons très clairement que les modèles XGBoost dé
 
 ### Pourcentage de buts cumulés
 
-![img](public/models/test_set/season/buts_cumul.png)
+![img](../public/models/test_set/season/buts_cumul.png)
 
 Le graphique ci-dessus est remarquablement similaire au dernier. Encore une fois, nous voyons que le modèle Base - angle forme presqu'une droite, que les modèles de base incluant la distance sont identiques et que les modèles de XGBost le sont aussi.
 
@@ -63,7 +63,7 @@ Au final, nous voyons encore que les modèles XGBoost performent les mieux et se
 
 ### Taux de buts
 
-![img](public/models/test_set/season/taux_de_buts.png)
+![img](../public/models/test_set/season/taux_de_buts.png)
 
 Dans ce graphique, nous pouvons un peu mieux distinguer les lignes différentes, mais nous observons encore la même tendance - la ligne d'angle semble aléatoire, les lignes de modèles entraînés sur la distance performent relativement bien et sont très collés, et les modèles XGBoost performent les mieux et sont aussi très collés.
 
@@ -81,7 +81,7 @@ Les modèles XGBoost ont les meilleurs courbes de tous les modèles. Ils ont la 
 
 ### Diagramme de fiabilité
 
-![img](public/models/test_set/season/diag_fiab.png)
+![img](../public/models/test_set/season/diag_fiab.png)
 
 #### Modèle entraîné sur l'angle
 
@@ -105,25 +105,25 @@ Nous verrons donc comment nos modèles performent sur ces nouvelles données.
 
 ### ROC
 
-![img](public/models/test_set/playoffs/roc.png)
+![img](../public/models/test_set/playoffs/roc.png)
 
 Nous observons que la tendance générale est la même qu'avec la saison régulière. Cependant, les performances ont un peu diminué - d'environ 0.18 pour les modèles XGBoost et aussi pour les modèles entraînés sur la distance. Le modèle entraîné sur l'angle demeure exactement autant aléatoire qu'avant. Cette baisse de performance suggère du overfitting sur les données de saison régulière. Il reste à préciser que la performance du modèle avec feature engineering n'a pas autant baissé - ce qui suggère que le feature engineering a permis de mieux généraliser les prédictions sur ce jeu de données.
 
 ### Pourcentage de buts cumulés
 
-![img](public/models/test_set/playoffs/buts_cumul.png)
+![img](../public/models/test_set/playoffs/buts_cumul.png)
 
 En comparaison avec le graphique pour la saison régulière, il n'y a pas de différence significative. La seule différence est que le modèle XGBoost avec feature engineering semble performer un tout petit peu mieux que sans feature engineering.
 
 ### Taux de buts
 
-![img](public/models/test_set/playoffs/taux_de_buts.png)
+![img](../public/models/test_set/playoffs/taux_de_buts.png)
 
 Encore, la tendance générale est la même qu'avec la saison régulière, mais avec des performances moins bonnes. Nous voyons dans l'autre graphique que les taux de buts commençait au-delà de 40% pour les modèles XGBoost, ce qui est réduit à en dessous de 35% dans ce cas. Cela indique que moins de but sont prédits correctement dans les pourcentages plus élevés de probabilité prédite pour la saison playoffs que la saison régulière.
 
 ### Diagramme de fiabilité
 
-![img](public/models/test_set/playoffs/diag_fiab.png)
+![img](../public/models/test_set/playoffs/diag_fiab.png)
 
 Ici, nous voyons vraiment une grande différence entre le graphique de playoffs et le graphique de saison régulière. Dans cas-ci, nous voyons que tous les modèles sont moins fiable et nous voyons aussi une divergeance dans la fiabilité des modèles XGBoost. Entre autre, le modèle XGBoost sans feature engineering est très sur-confiant des prédictions entre environ 40% et 60% de probabilité moyenne prédite et compense en étant complètement sous-confiant par la suite parce que tous les positifs on déjà été prédits. En contraste, le modèle XGBoost avec feature engineering semble bénéficier d'une meilleur fiabilité - il est sous confiant lorsque la probabilité moyenne prédite est faible, mais reprend de la confiance dans ses prédictions par la suite.
 
