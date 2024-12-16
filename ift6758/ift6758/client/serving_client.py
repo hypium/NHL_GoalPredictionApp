@@ -57,7 +57,7 @@ class ServingClient:
         """
 
         payload = {"workspace": workspace, "model": model, "version": version}
-        response = requests.post(f"{self.base_url}/download_registry_model", payload)
+        response = requests.post(f"{self.base_url}/download_registry_model", json=payload)
         if response.status_code == 200:
             return response.json()
         else:
