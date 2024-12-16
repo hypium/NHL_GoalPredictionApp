@@ -67,12 +67,9 @@ def download_registry_model():
             artifact = api.artifact(artifact_name)
             artifact.download()
             # Load the model
-            app.logger.info(f"Attemping to load model {model_name} version {version}")
-            app.logger.info(f"Model files: {artifact.files()}")
-            app.logger.info(f"Model file: {artifact.files()[0]}")
             file_wrapper = artifact.files()[0].download()
             model_path = file_wrapper.name
-            app.logger.info(f"Model path: {model_path}")
+            app.logger.info(f"Attemping to load model {model_name} version {version}")
             model = joblib.load(model_path)
             app.logger.info(f"Model {model_name} version {version} downloaded and loaded succesfully.")
 
