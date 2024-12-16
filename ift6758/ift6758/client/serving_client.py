@@ -16,7 +16,6 @@ class ServingClient:
             features = ["distance"]
         self.features = features
 
-        # any other potential initialization
 
     def predict(self, X: pd.DataFrame) -> pd.DataFrame:
         """
@@ -27,28 +26,40 @@ class ServingClient:
         Args:
             X (Dataframe): Input dataframe to submit to the prediction service.
         """
+        response = requests.post(f"{self.base_url}/predict", json=json.loads(X.to_json()))
+        if response.status_code == 200:
+            return pd.DataFrame(response.json(), columns=['goal_proba'])
+        else:
+            logger.error(f"Failed to make predictions: {response.text}")
+            return pd.DataFrame(columns=["goal_proba"])
 
-        raise NotImplementedError("TODO: implement this function")
 
     def logs(self) -> dict:
         """Get server logs"""
+        response = requests.get(f"{self.base_url}/logs")
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to get logs: {response.text}")
+            return {}
 
-        raise NotImplementedError("TODO: implement this function")
 
     def download_registry_model(self, workspace: str, model: str, version: str) -> dict:
         """
         Triggers a "model swap" in the service; the workspace, model, and model version are
         specified and the service looks for this model in the model registry and tries to
         download it. 
-
-        See more here:
-
-            https://www.comet.ml/docs/python-sdk/API/#apidownload_registry_model
         
         Args:
-            workspace (str): The Comet ML workspace
-            model (str): The model in the Comet ML registry to download
+            workspace (str): The wandb workspace and project
+            model (str): The model in the wandb artifact registry to download
             version (str): The model version to download
         """
 
-        raise NotImplementedError("TODO: implement this function")
+        payload = {"workspace": workspace, "model": model, "version": version}
+        response = requests.post(f"{self.base_url}/download_registry_model", payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to download registry model: {response.text}")
+            return {}
