@@ -89,11 +89,14 @@ def predict():
     
     The request body should be in the following JSON format:
     {
-        "distance": <value>,
-        "angle_to_goal": <value>
+        "features": {
+            "distance": [...],
+            "angle_to_goal": [...]  # Optional, depending on model
+        }
     }
     """
     global model
+    global model_name
 
     # Get POST json data
     data = request.get_json()
@@ -102,12 +105,25 @@ def predict():
     if model is None:
         return jsonify({"error": "Model not yet loaded."}), 400
     
-    input_data = pd.DataFrame([data])
+    if "features" not in data:
+        return jsonify({"error:" "'features' key not found in payload."}), 400
+    
+    features = data['features']
 
     try:
-        # Predict the probability of a goal using the loaded model
-        prediction = model.predict_proba(input_data)
-        response = prediction.tolist()
+        if model_name == "base_distance_angle":
+            if "distance" not in features or "angle_to_goal" not in features:
+                return jsonify({"error": "'distance' and 'angle_to_goal' features are required for this model."})
+            X = pd.DataFrame({"distance": features['distance'], "angle_to_goal": features['angle_to_goal']})
+        elif model_name == "base_distance":
+            if "distance" not in features:
+                return jsonify({"error": "'distance' feature is required for this model."})
+            X = pd.DataFrame({"distance": features['distance']})
+        else:
+            return jsonify({f"error": "unknown model: {model_name}"})
+    
+        prediction = model.predict_proba(X)
+        response = prediction[:, 1].tolist() # Class 1 is the goal probability.
         app.logger.info(f"Prediction result: {response}")
         return jsonify(response)
     
