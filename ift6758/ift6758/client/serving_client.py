@@ -26,7 +26,7 @@ class ServingClient:
         Args:
             X (Dataframe): Input dataframe to submit to the prediction service.
         """
-        response = requests.post(f"{self.base_url}/predict", json=json.loads(X.to_json()))
+        response = requests.post(f"{self.base_url}/predict", json=X.to_dict())
         if response.status_code == 200:
             return pd.DataFrame(response.json(), columns=['goal_proba'])
         else:
