@@ -89,11 +89,11 @@ def predict():
     
     The request body should be in the following JSON format:
     {
-        "features": {
-            "distance": [...],
-            "angle_to_goal": [...]  # Optional, depending on model
-        }
+        'distance': {0: ..., 1: ..., ...},
+        'angle_to_goal': {0: ..., 1: ..., ...}  # Optional, depending on model
     }
+
+    This is done by passing payload=X.to_dict() where X is the input DataFrame
     """
     global model
     global model_name
@@ -105,20 +105,18 @@ def predict():
     if model is None:
         return jsonify({"error": "Model not yet loaded."}), 400
     
-    if "features" not in data:
-        return jsonify({"error:" "'features' key not found in payload."}), 400
-    
-    features = data['features']
-
     try:
         if model_name == "base_distance_angle":
-            if "distance" not in features or "angle_to_goal" not in features:
+            if "distance" not in data or "angle_to_goal" not in data:
                 return jsonify({"error": "'distance' and 'angle_to_goal' features are required for this model."})
-            X = pd.DataFrame({"distance": features['distance'], "angle_to_goal": features['angle_to_goal']})
+            distance = list(data['distance'].values())
+            angle_to_goal = list(data['angle_to_goal'].values())
+            X = pd.DataFrame({"distance": distance, "angle_to_goal": angle_to_goal})
         elif model_name == "base_distance":
-            if "distance" not in features:
+            if "distance" not in data:
                 return jsonify({"error": "'distance' feature is required for this model."})
-            X = pd.DataFrame({"distance": features['distance']})
+            distance = list(data['distance'].values())
+            X = pd.DataFrame({"distance": distance})
         else:
             return jsonify({f"error": "unknown model: {model_name}"})
     
