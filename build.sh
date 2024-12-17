@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "TODO: fill in the docker build command"
+IMAGE_NAME="ift6758/serving:latest"
+docker build --build-arg WANDB_API_KEY="$WANDB_API_KEY" -t $IMAGE_NAME -f Dockerfile.serving .
