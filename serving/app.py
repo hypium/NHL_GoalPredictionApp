@@ -8,6 +8,8 @@ import joblib
 from waitress import serve
 import wandb
 
+WANDB_API_KEY = os.getenv("WANDB_API_KEY", "API key not set")
+wandb.login(key=WANDB_API_KEY)
 LOG_FILE = os.environ.get("FLASK_LOG", "flask.log")
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO)
 
