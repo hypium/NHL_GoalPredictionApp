@@ -130,7 +130,10 @@ def predict():
     except Exception as e:
         app.logger.error(f"Prediction error: {e}")
         return jsonify({"error": "Prediction failed"}), 500
-    
+
+@app.route("/model", methods=["GET"])
+def get_model():
+    return jsonify({"model": model_name})
 
 if __name__ == '__main__':
     serve(app, host="0.0.0.0", port=8000)

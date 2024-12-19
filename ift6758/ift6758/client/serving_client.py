@@ -59,3 +59,11 @@ class ServingClient:
         else:
             logger.error(f"Failed to download registry model: {response.text}")
             return {}
+        
+    def model(self) -> dict:
+        response = requests.get(f"{self.base_url}/model")
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to get model: {response.text}")
+            return {}
