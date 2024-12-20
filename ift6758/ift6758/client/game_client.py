@@ -11,7 +11,6 @@ class GameClient:
         # and the values are the goal probabilities for that event.
         self.event_map = {}
         self.servingClient = ServingClient(ip="127.0.0.1", port=8000)
-        self.set_model("IFT6758-2024-A02/IFT6758.2024-A02", "base_distance", "v2")
 
 
     def fetch_game_data(self, game_id):

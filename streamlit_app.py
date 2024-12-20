@@ -94,8 +94,6 @@ def get_total_xg(data, game_id):
             home_team_xgs.append(xg)
         else:
             raise ValueError(f'Event {event_id} does not belong to any team')
-    print(away_team_xgs, home_team_xgs)
-    print(away_team_xgs, home_team_xgs)
     return np.sum(away_team_xgs), np.sum(home_team_xgs)
 
 def get_distance_angle(game_id):
@@ -180,7 +178,6 @@ with st.container():
         )
         game_data = gc.fetch_game_data(game_id_input)
         model = gc.get_model()
-        st.write(model)
         df = pd.DataFrame(list(data.items()), columns=["id", "Model output"])
         df.index = [f"event {i}" for i in range(len(df))]
         distances, angles = get_distance_angle(game_id_input)
@@ -189,5 +186,5 @@ with st.container():
             df['distance'] = distances
         elif model == 'base_distance_angle':
             df['distance'] = distances
-            df['angles'] = angles
+            df['angle_to_goal'] = angles
         st.dataframe(df)
