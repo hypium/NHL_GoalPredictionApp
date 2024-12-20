@@ -10,20 +10,6 @@ if not './ift6758/ift6758/client' in sys.path:
 
 from ift6758.ift6758.client.game_client import GameClient
 
-# TODO
-#? SWITCH FROM select TO text input:
-#     st.text_input(
-#         "Placeholder for the other text input widget",
-#         "This is a placeholder",
-#         key="placeholder",
-#     )
-
-# """
-# General template for your streamlit app. 
-# Feel free to experiment with layout and adding functionality!
-# Just make sure that the required functionality is included as well
-# """
-
 gc = GameClient()
 processed_games_events = {}
 processed_events_ids = []
@@ -67,7 +53,6 @@ def get_team_events_ids(game_id):
     for play in data['plays']:
         event_id = play['eventId']
         if play["typeCode"] not in {505, 506}:
-            # only consider shots and unhandled events
             continue
         try:
             event_id = play['eventId']
@@ -79,7 +64,6 @@ def get_team_events_ids(game_id):
             else:
                 raise ValueError(f'Incorrect team id for event id: {event_id}') 
         except:
-            # The data does not contain the required details, we skip over this shot
             continue
     return away_team_event_ids, home_team_event_ids
 
