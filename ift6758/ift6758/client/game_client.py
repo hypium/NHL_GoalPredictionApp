@@ -10,7 +10,7 @@ class GameClient:
         # event_map contains key value pairs where the keys are the event id
         # and the values are the goal probabilities for that event.
         self.event_map = {}
-        self.servingClient = ServingClient(ip="127.0.0.1", port=8000)
+        self.servingClient = ServingClient(ip="serving", port=8000)
 
 
     def fetch_game_data(self, game_id):
