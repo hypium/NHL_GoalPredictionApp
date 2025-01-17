@@ -1,85 +1,107 @@
-# Real-time NHL Goal Prediction Application
+
+# NHL Goal Prediction App
+
+This project is a machine learning application designed to predict the probability of a shot scoring a goal in NHL games. Leveraging XGBoost, this app processes detailed game data and generates probabilistic predictions, providing insights into shot success rates.
+
+---
+
+## Features
+
+* **Probability-Based Predictions**: Outputs the likelihood of a shot being a goal rather than a binary classification.
+* **Comprehensive Feature Set**: Includes key game dynamics like shot type, location, previous events, and more.
+* **Handles Imbalanced Data**: Utilizes techniques to address class imbalance between goal (class 1) and non-goal (class 0) shots.
+* **Interactive Interface**: (If applicable) Allows users to input game data and receive predictions.
+
+---
+
+## Dataset Overview
+
+The dataset includes features such as:
+
+* `period`: Current game period.
+* `x_coord`, `y_coord`: Shot location coordinates.
+* `shot_type`: One-hot encoded types of shots (e.g., wrist, snap, slap).
+* `is_empty_net`: Boolean indicating if the net is empty.
+* `distance`, `angle_to_goal`: Calculated features for shot distance and angle.
+* `game_seconds`: Timestamp within the game.
+* Previous event details:
+  * `last_event_type`
+  * `last_event_x_coord`, `last_event_y_coord`
+  * `time_since_last_event`
+  * `distance_from_last_event`
+* Contextual features:
+  * `rebound`: Whether the shot is a rebound.
+  * `angle_change`, `speed`: Calculated features based on previous events.
+
+The dataset contains approximately 276,000 non-goal shots and 29,000 goals, requiring careful handling of class imbalance.
+
+---
+
+## Model Overview
+
+* **Algorithm**: XGBoost classifier, MLP classifier, Logistic Regression, optimized for probabilistic outputs.
+* **Feature Engineering**: Includes calculations like shot angle, distance, and speed, as well as handling categorical variables via one-hot encoding.
+* **Imbalance Handling**: Incorporates oversampling techniques such as SMOTE and evaluation metrics tailored for imbalanced datasets.
+
+---
 
 ## Installation
 
-To install this package, first setup your Python environment by following the instructions in the [Environment](#environments) section.
-Once you've setup your environment, you can install this package by running the following command from the root directory of your repository. 
+1. Clone the repository:
 
-    pip install -e .
+   ```
+   git clone https://github.com/hypium/NHL_GoalPredictionApp
+   cd nhl-goal-prediction-app
+   ```
+2. Install dependencies:
 
-You should see something similar to the following output:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Run the app:
 
-    > pip install -e .
-    Obtaining file:///home/USER/project-template
-    Installing collected packages: ift6758
-    Running setup.py develop for ift6758
-    Successfully installed ift6758-0.1.0
+   ```
+   docker-compose up
+   ```
 
+---
 
-## Environments
+## Usage
 
-The first thing you should setup is your isolated Python environment.
-You can manage your environments through either Conda or pip.
-Both ways are valid, just make sure you understand the method you choose for your system.
-It's best if everyone on your team agrees on the same method, or you will have to maintain both environment files!
-Instructions are provided for both methods.
+1. **Input Data**: Provide shot information in the required format via the interactive interface or as a batch CSV file.
+2. **View Predictions**: The app will output the probability of each shot resulting in a goal.
+3. **Analyze Insights**: Utilize the probabilities to gain deeper insights into game strategies and player performance.
 
-**Note**: If you are having trouble rendering interactive plotly figures and you're using the pip + virtualenv method, try using Conda instead.
+---
 
-### Conda 
+## Results
 
-Conda uses the provided `environment.yml` file.
-You can ignore `requirements.txt` if you choose this method.
-Make sure you have [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) installed on your system.
-Once installed, open up your terminal (or Anaconda prompt if you're on Windows).
-Install the environment from the specified environment file:
+The model achieves strong performance in handling highly imbalanced data, offering accurate probability estimates that align with game outcomes. Evaluation metrics include precision, recall, F1 score, and AUC-ROC.
 
-    conda env create --file environment.yml
-    conda activate ift6758-conda-env
+---
 
-After you install, register the environment so jupyter can see it:
+## Future Work
 
-    python -m ipykernel install --user --name=ift6758-conda-env
+* Expand the dataset with additional seasons and game scenarios.
+* Integrate live game data for real-time predictions.
+* Experiment with other models and ensemble techniques for enhanced accuracy.
 
-You should now be able to launch jupyter and see your conda environment:
+---
 
-    jupyter-lab
+## License
 
-If you make updates to your conda `environment.yml`, you can use the update command to update your existing environment rather than creating a new one:
+This project is licensed under the MIT License.
 
-    conda env update --file environment.yml    
+---
 
-You can create a new environment file using the `create` command:
+## Acknowledgments
 
-    conda env export > environment.yml
+* NHL for providing publicly available game data.
+* XGBoost and Python libraries for their robust machine learning frameworks.
+* Contributors and open-source community for inspiration and guidance.
 
-### Pip + Virtualenv
+---
 
-An alternative to Conda is to use pip and virtualenv to manage your environments.
-This may play less nicely with Windows, but works fine on Unix devices.
-This method makes use of the `requirements.txt` file; you can disregard the `environment.yml` file if you choose this method.
+## Contact
 
-Ensure you have installed the [virtualenv tool](https://virtualenv.pypa.io/en/latest/installation.html) on your system.
-Once installed, create a new virtual environment:
-
-    vitualenv ~/ift6758-venv
-    source ~/ift6758-venv/bin/activate
-
-Install the packages from a requirements.txt file:
-
-    pip install -r requirements.txt
-
-As before, register the environment so jupyter can see it:
-
-    python -m ipykernel install --user --name=ift6758-venv
-
-You should now be able to launch jupyter and see your conda environment:
-
-    jupyter-lab
-
-If you want to create a new `requirements.txt` file, you can use `pip freeze`:
-
-    pip freeze > requirements.txt
-
-
-
+For questions, suggestions, or contributions, please contact daniel.lofeodo@gmail.com, nathan.cormerais@umontreal.ca
