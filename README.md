@@ -19,7 +19,7 @@ This project is a machine learning application designed to predict the probabili
 
 The interactive debugging tool allows users to visualize events as they occur on the rink. This can be helpful in feature engineering new datasets.
 
-![img](blog\public\outil_de_debuggage.png)
+![img](blog/public/outil_de_debuggage.png)
 
 ---
 
