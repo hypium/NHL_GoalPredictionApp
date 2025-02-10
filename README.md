@@ -76,7 +76,7 @@ The Select K Best algorithm was used to filter features in order to reduce model
 
 ![img](blog/public/models/xgboost/correlation_matrix.png)
 
-Looking at the correlation matrix, we see that the features `shot_type_snap`, `shot_type_tip-in`, `shot_type_wrap-around` and `shot_type_wrist` have a correlation close to zero with `is_goal`. So it's not surprising that the algorithm has filtered out these features.	
+Looking at the correlation matrix, we see that the features `shot_type_snap`, `shot_type_tip-in`, `shot_type_wrap-around` and `shot_type_wrist` have a correlation close to zero with `is_goal`. So it's not surprising that the algorithm has filtered out these features.
 
 #### Importance of features
 
@@ -253,10 +253,3 @@ This project is licensed under the MIT License.
 ## Contact
 
 For questions, suggestions, or contributions, please contact daniel.lofeodo@gmail.com, nathan.cormerais@umontreal.ca
-
----
-
-## Dataset Overview
-
-The
----
