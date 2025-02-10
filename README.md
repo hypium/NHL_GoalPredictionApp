@@ -1,4 +1,4 @@
-# NHL Goal Prediction Application
+# NHL Goal Prediction
 
 This project is a machine learning application designed to predict the probability of a shot scoring a goal in NHL games. This app processes detailed game data and generates probabilistic predictions, providing insights into shot success rates.
 
@@ -9,9 +9,9 @@ This project is a machine learning application designed to predict the probabili
 * **Interactive Debugging Tool:** Allows users to visualize events on the rink given a game ID.
 * **Dataset Creation:** Pulls data using REST API requests from the official NHL API and creates a comprehensive dataset.
 * **Data Analysis:** Creates shot heatmaps for teams in a given year, showing their prefered shooting coordinates.
-* **Probability-Based Predictions**: Outputs the likelihood of a shot being a goal rather than a binary classification.
-* **Comprehensive Feature Set**: Includes key game dynamics like shot type, location, previous events, and more.
-* **Interactive Interface**: Allows users to input game data and receive predictions in a dockerized application.
+* **Probability-Based Predictions and Model Performance Analysis**: Logistic regression, XGBoost, and MLP models are utilized to output the likelihood of a shot being a goal.
+* **Model Performance Analysis:** Many different analysis are employed to compare the performance of all models.
+* **Interactive Application**: Allows users to input game data and receive predictions in a dockerized application.
 
 ---
 
@@ -60,58 +60,127 @@ The dataset contains approximately 276,000 non-goal shots and 29,000 goals.
 
 From the dataset, shot maps were created by binning all shots by team, year, and coordinates into an array the size of the rink. Gaussian smoothing was then applied to interpolate continous values between grid lines, thus creating a heatmap. The heatmaps were generated for all teams between 2016 and 2020.
 
-<iframe src="blog/public/excess_shot_rates_2016.html" width="100%" height="500"></iframe>
+![img](blog/public/advanced_visualizations_q4/sabres2018.png)
 
 ---
 
-## Model Overview
+## Model Performance Analysis - Regular Season
 
-* **Algorithm**: XGBoost classifier, MLP classifier, Logistic Regression, optimized for probabilistic outputs.
-* **Feature Engineering**: Includes calculations like shot angle, distance, and speed, as well as handling categorical variables via one-hot encoding.
-* **Imbalance Handling**: Incorporates oversampling techniques such as SMOTE and evaluation metrics tailored for imbalanced datasets.
+In this section, the MLP will be omitted because its ROC-AUC was significantly inferior to XGBoost models and thus not of interest. For reference, please see ift6758/data/models/experiments.ipynb.
 
----
+All models have been trained on all regular-season shots from 2016 to 2019 inclusively.
 
-## Installation
+To test the models, we have made predictions about the 2020 regular season and produced several graphs. We tested the following models:
 
-1. Clone the repository:
+- A basic model (logistic regression) trained only on distance
+- A basic model trained only on angle
+- A basic model trained on angle and distance
+- An XGBoost model trained on all data with hyperparameter optimization
+- An XGBoost model trained on all data with feature engineering and hyperparameter optimization.
 
-   ```
-   git clone https://github.com/hypium/NHL_GoalPredictionApp
-   cd nhl-goal-prediction-app
-   ```
-2. Install dependencies:
+Hyperparameters will be labeled on the graphs to aid readability.
 
-   ```
-   pip install -r requirements.txt
-   ```
-3. Run the app:
+The graphs we will analyze will be ROC, cumulative goal percentage, goal rate and reliability graphs.
 
-   ```
-   docker-compose up
-   ```
+### ROC
 
----
+![img](blog/public/models/test_set/season/roc.png)
 
-## Usage
+Looking at the graph above, we can see that the curves are generally quite distinct from one another, apart from the two Base - distance and Base - distance + angle curves, and the two XGBoost curves, which are essentially identical.
 
-1. **Input Data**: Provide shot information in the required format via the interactive interface or as a batch CSV file.
-2. **View Predictions**: The app will output the probability of each shot resulting in a goal.
-3. **Analyze Insights**: Utilize the probabilities to gain deeper insights into game strategies and player performance.
+#### Angle-driven model
 
----
+The Base - angle line shows a similar shape to the random line, with added noise. What's more, the area under the curve has a value of 0.512, which is identical to the area of a perfectly random curve of 0.5. We can therefore conclude that the angle probably has very little impact on the probability of scoring.
 
-## Results
+#### Distance-trained models
 
-The model achieves strong performance in handling highly imbalanced data, offering accurate probability estimates that align with game outcomes. Evaluation metrics include precision, recall, F1 score, and AUC-ROC.
+Moving up the curves, we find the Base - distance and Base - distance + angle curves. We have observed that angle seems to play no role in the probability of a shot hitting the target. This is also justified by the fact that the distance + angle curve has no difference from the distance curve. So, we see that with ROC AUC scores of 0.697, distance plays a significant role in predicting the probability of scoring a shot. That distance in a logistic regressor gives a respectable result, but again we can do a little better.
 
----
+#### XGBoost
 
-## Future Work
+Re-potting once again, we see the XGBoost curves. These curves are as identical as the last ones - they also have an identical AUC ROC score when rounded to 3 significant figures, i.e. 0.778, a pretty respectable score.
 
-* Expand the dataset with additional seasons and game scenarios.
-* Integrate live game data for real-time predictions.
-* Experiment with other models and ensemble techniques for enhanced accuracy.
+From this curve, we can see quite clearly that the XGBoost models demonstrate the best compromise between the rate of true positives and the rate of false negatives. By manipulating the classification threshold of the latter, we'll generally end up with the best compromise between the rate of well-classified goals and the rate of misclassified goals.
+
+### Percentage of cumulative goals predicted
+
+![img](blog/public/models/test_set/season/buts_cumul.png)
+
+The graph above is remarkably similar to the last one. Once again, we see that the Base - angle model forms almost a straight line, that the base models including distance are identical and that the XGBoost models are also identical.
+
+#### Angle-driven model
+
+Returning to the angle line - we see similar behavior to the last graph. As we move down the percentiles, the percentage of cumulative goals rises linearly. This again supports our hypothesis that angle has no impact on goal probability and so the probability percentiles with this model essentially randomly predict whether it will be a goal or not, which explains the right-hand line.
+
+#### Distance-trained models
+
+Again, we see that models including distance perform relatively well, especially in comparison with angle. They predict a lot of goals in the higher percentiles, meaning that predictions with a higher probability actually predict more goals. As we move down the percentiles, we can visually determine that the derivative of the graph is moving down, indicating that with lower probabilities, fewer goals are accumulating. This is the expected result of a good model.
+
+#### XGBoost models
+
+However, XGBoost models perform even better. Looking at the graphs, we see that the value of the graph derivative is highest in the high percentiles for the XGBoost models. This indicates that they quickly accumulate goals in the high percentiles when the predicted goal probability is high.
+
+In the end, we can still see that the XGBoost models perform best and come closest to the ideal graph, i.e. a vertical line at zero on the x-axis rising to 100% and a horizontal line at 100% on the y-axis (a bracket).
+
+### Goal rate
+
+![img](blog/public/models/test_set/season/taux_de_buts.png)
+
+In this graph, we can distinguish the different lines a little better, but we still observe the same trend - the angle line looks random, the distance-trained model lines perform relatively well and are very close, and the XGBoost models perform best and are also very close.
+
+#### Angle-driven model
+
+We can see that the Base - angle model curve is a little noisy, but in general, if we were to draw a trend line through it, we'd see that whatever the percentile, the goal rate remains relatively constant at around 10%. This is indicative of a model that makes predictions that are not correlated with true goal probability.
+
+#### Distance-trained models
+
+Distance-trained models again show very similar curves. They show a relatively high goal rate that is predicted in the high percentiles and drops apiciously at the beginning, but quietly towards the end. This is indicative of models that make probability predictions that are truly correlated with true probability.
+
+#### XGBoost models
+
+XGBoost models have the best curves of all models. They have the most apical slope in the high percentiles indicating that they predict goals well when their predicted probability is high.
+
+### Reliability diagram
+
+![img](blog/public/models/test_set/season/diag_fiab.png)
+
+#### Angle-trained model
+
+We can see that this model doesn't make predictions exceeding around 7% probability. This is not surprising given the latest analyses.
+
+#### Models trained on distance
+
+We see that these models don't make high probability predictions either - no more than 20%. This explains why none of the shots is predicted as a goal - none of the percentages exceeds the 50% threshold.
+
+#### XGBoost models
+
+In general, we can see that the XGBoost models make fairly reliable predictions on this data set. Their curves closely match the ideal curve. We do, however, see a touch of under-confidence between around 50% and 65% of average predicted probability, followed by a compensating slight over-confidence towards the end of the curves. This trend is slightly more pronounced in the model without feature engineering.
+
+## Model Performance Analysis - Playoffs
+
+Now we'll look at the models' performance on 2020 playoff shots. The aim of this section will be less to compare model performance, but rather to compare performance on this specific dataset.
+
+The playoffs are considered a more intense game environment - the stakes are higher. As a result, players' behavior is likely to differ from their behavior in the regular season. In other words, there's a risk that playoff shots will be part of a different distribution than regular-season shots.
+
+We'll see how our models perform on these new data.
+
+### ROC
+
+![img](blog/public/models/test_set/playoffs/roc.png)
+
+## Model Performance Analysis - Conclusion
+
+In summary, we see that the XGBoost models perform significantly better in all the metrics analyzed than the basic models, both in the regular season and in the playoffs, but particularly better in the playoffs for the model with feature engineering.
+
+Based on previous analyses, we observed that:
+
+- angle does not seem to have any impact on the probability of a shot being a goal
+- XGBoost models are better at differentiating goals from unsuccessful shots, with an AUC performance of 0.778 over the regular season.
+- Models perform less well in the playoffs
+- Models overfitted on regular season data
+- Feature engineering helped mitigate this overfitting
+
+In conclusion, XGBoost with feature engineering and hyperparameter optimization is the most robust prediction model in this context. However, the differences in performance between the regular season and the playoffs demonstrate the need for better adjustment of the models to account for variations in shot distribution. This opens up avenues for future improvements, such as incorporating playoff data into training.
 
 ---
 
@@ -134,6 +203,7 @@ This project is licensed under the MIT License.
 For questions, suggestions, or contributions, please contact daniel.lofeodo@gmail.com, nathan.cormerais@umontreal.ca
 
 ---
+
 ## Dataset Overview
 
 The
