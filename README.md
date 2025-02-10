@@ -168,6 +168,26 @@ We'll see how our models perform on these new data.
 
 ![img](blog/public/models/test_set/playoffs/roc.png)
 
+We can see that the general trend is the same as in the regular season. However, performance has dropped slightly - by around 0.18 for the XGBoost models and also for the distance-trained models. The angle-trained model remains exactly as random as before. This drop in performance suggests overfitting on regular-season data. It remains to be said that the performance of the model with feature engineering has not dropped as much - suggesting that feature engineering has enabled better generalization of predictions on this dataset.
+
+### Percentage of cumulative goals predicted
+
+![img](blog/public/models/test_set/playoffs/buts_cumul.png)
+
+Compared with the regular season graph, there is no significant difference. The only difference is that the XGBoost model with feature engineering seems to perform slightly better than without feature engineering.
+
+### Goal rate
+
+![img](blog/public/models/test_set/playoffs/taux_de_buts.png)
+
+Again, the general trend is the same as with the regular season, but with poorer performance. We see in the other graph that goal rates started above 40% for the XGBoost models, which is reduced to below 35% in this case. This indicates that fewer goals are predicted correctly in the higher percentages of predicted probability for the playoff season than the regular season.
+
+### Reliability diagram
+
+![img](blog/public/models/test_set/playoffs/diag_fiab.png)
+
+Here we really see a big difference between the playoff graph and the regular season graph. In this case, we see that all the models are less reliable, and we also see a divergence in the reliability of the XGBoost models. Among other things, the XGBoost model without feature engineering is very over-confident of predictions between around 40% and 60% of average predicted probability and compensates by being completely under-confident afterwards because all the positives have already been predicted. In contrast, the XGBoost model with feature engineering seems to benefit from better reliability - it is under-confident when the average predicted probability is low, but regains confidence in its predictions thereafter.
+
 ## Model Performance Analysis - Conclusion
 
 In summary, we see that the XGBoost models perform significantly better in all the metrics analyzed than the basic models, both in the regular season and in the playoffs, but particularly better in the playoffs for the model with feature engineering.
