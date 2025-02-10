@@ -9,7 +9,7 @@ This project is a machine learning application designed to predict the probabili
 * **Interactive Debugging Tool:** Allows users to visualize events on the rink given a game ID.
 * **Dataset Creation:** Pulls data using REST API requests from the official NHL API and creates a comprehensive dataset.
 * **Data Analysis:** Creates shot heatmaps for teams in a given year, showing their prefered shooting coordinates.
-* **Probability-Based Predictions and Model Performance Analysis**: Logistic regression, XGBoost, and MLP models are utilized to output the likelihood of a shot being a goal.
+* **Feature Engineering:** Datasets are optimized for XGBoost performance.
 * **Model Performance Analysis:** Many different analysis are employed to compare the performance of all models.
 * **Interactive Application**: Allows users to input game data and receive predictions in a dockerized application.
 
@@ -64,9 +64,33 @@ From the dataset, shot maps were created by binning all shots by team, year, and
 
 ---
 
+## Feature Engineering
+
+### Data pre-processing
+
+All numerical features have been scaled using a Standard Scaler, which centers the data around 0 and normalizes it to a variance of 1. This brings all features onto the same scale and prevents features with high value ranges from dominating those with smaller ranges, thus improving convergence and drive stability.
+
+#### Feature selection
+
+The Select K Best algorithm was used to filter features in order to reduce model complexity, prevent overlearning on the training set and improve model generalizability.
+
+![img](blog/public/models/xgboost/correlation_matrix.png)
+
+Looking at the correlation matrix, we see that the features `shot_type_snap`, `shot_type_tip-in`, `shot_type_wrap-around` and `shot_type_wrist` have a correlation close to zero with `is_goal`. So it's not surprising that the algorithm has filtered out these features.	
+
+#### Importance of features
+
+![img](blog/public/models/xgboost/importance_carac.png)
+
+In the graph above, we see that `is_empty_net` is by far the most influential variable. This makes perfect sense - scoring a goal is much easier if there's no goalkeeper! The other two important characteristics are `distance`, which measures the proximity of the shot to the goal, and `last_event_y`, which is a little cryptic and demonstrates one of the advantages of ML - it allows us to notice correlations that are not always obvious or easily interpretable to us.
+
+---
+
 ## Model Performance Analysis - Regular Season
 
-In this section, the MLP will be omitted because its ROC-AUC was significantly inferior to XGBoost models and thus not of interest. For reference, please see ift6758/data/models/experiments.ipynb.
+Because we are interested in probability prediction and not binary accuracy of classificaiton, we value ROC-AUC score more highly than other performance metrics.
+
+As such, the MLP will be omitted because its ROC-AUC was significantly inferior to XGBoost models and thus not of interest. For reference, please see ift6758/data/models/experiments.ipynb.
 
 All models have been trained on all regular-season shots from 2016 to 2019 inclusively.
 
@@ -201,6 +225,14 @@ Based on previous analyses, we observed that:
 - Feature engineering helped mitigate this overfitting
 
 In conclusion, XGBoost with feature engineering and hyperparameter optimization is the most robust prediction model in this context. However, the differences in performance between the regular season and the playoffs demonstrate the need for better adjustment of the models to account for variations in shot distribution. This opens up avenues for future improvements, such as incorporating playoff data into training.
+
+---
+
+## Interactive Application
+
+An interactive application has been created using Streamlit and Flask to allow users to play around with different models and see goal probabilities for different games, including live games. The application can be launched using `docker compose up.`
+
+![img](blog/public/docker-app.png)
 
 ---
 
